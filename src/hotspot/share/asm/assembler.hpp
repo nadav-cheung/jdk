@@ -365,8 +365,10 @@ class AbstractAssembler : public ResourceObj  {
   CodeSection*  code_section() const   { return _code_section; }
   CodeBuffer*   code()         const   { return code_section()->outer(); }
   int           sect()         const   { return code_section()->index(); }
-  address       pc()           const   { return code_section()->end();   }
-  int           offset()       const   { return code_section()->size();  }
+  virtual int   pending_size() const   { return 0; }
+  virtual void  flush_pending()        { }
+  address       pc()           const   { return code_section()->end() + pending_size();   }
+  int           offset()       const   { return code_section()->size() + pending_size();  }
   int           locator()      const   { return CodeBuffer::locator(offset(), sect()); }
 
   OopRecorder*  oop_recorder() const   { return _oop_recorder; }
@@ -375,7 +377,8 @@ class AbstractAssembler : public ResourceObj  {
   void   register_skipped(int size) { code_section()->register_skipped(size); }
 
   address       inst_mark() const { return code_section()->mark();       }
-  void      set_inst_mark()       {        code_section()->set_mark();   }
+  // void      set_inst_mark()       {        code_section()->set_mark();   }
+  void      set_inst_mark()       {        code_section()->set_mark(pc());   }
   void    clear_inst_mark()       {        code_section()->clear_mark(); }
 
 
@@ -384,10 +387,12 @@ class AbstractAssembler : public ResourceObj  {
     assert(!pd_check_instruction_mark()
         || inst_mark() == nullptr || inst_mark() == code_section()->end(),
         "call relocate() between instructions");
-    code_section()->relocate(code_section()->end(), rspec, format);
+    // code_section()->relocate(code_section()->end(), rspec, format);
+    code_section()->relocate(pc(), rspec, format);
   }
   void relocate(   relocInfo::relocType rtype, int format = 0) {
-    code_section()->relocate(code_section()->end(), rtype, format);
+    // code_section()->relocate(code_section()->end(), rtype, format);
+    code_section()->relocate(pc(), rtype, format);
   }
 
   static int code_fill_byte();         // used to pad out odd-sized code buffers
