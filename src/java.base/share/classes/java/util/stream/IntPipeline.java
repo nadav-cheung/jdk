@@ -302,6 +302,7 @@ abstract class IntPipeline<E_IN>
             Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 class FlatMap implements Sink.OfInt, IntPredicate {
                     @Stable boolean cancel;
+                    private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }
@@ -309,8 +310,12 @@ abstract class IntPipeline<E_IN>
                     @Override
                     public void accept(int input) {
                         try (IntStream result = mapper.apply(input)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 

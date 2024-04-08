@@ -282,6 +282,7 @@ abstract class LongPipeline<E_IN>
                 StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
             Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
+                final var shorts = isShortCircuitingPipeline();
                 class FlatMap implements Sink.OfLong, LongPredicate {
                     @Stable boolean cancel;
 
@@ -291,8 +292,12 @@ abstract class LongPipeline<E_IN>
                     @Override
                     public void accept(long input) {
                         try (LongStream result = mapper.apply(input)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 

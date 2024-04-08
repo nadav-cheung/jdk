@@ -280,6 +280,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             Sink<P_OUT> opWrapSink(int flags, Sink<R> sink) {
                 class FlatMap implements Sink<P_OUT>, Predicate<R> {
                     @Stable boolean cancel;
+                    private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }
@@ -287,8 +288,12 @@ abstract class ReferencePipeline<P_IN, P_OUT>
                     @Override
                     public void accept(P_OUT u) {
                         try (Stream<? extends R> result = mapper.apply(u)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 
@@ -321,6 +326,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             Sink<P_OUT> opWrapSink(int flags, Sink<Integer> sink) {
                 class FlatMap implements Sink<P_OUT>, IntPredicate {
                     @Stable boolean cancel;
+                    private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }
@@ -328,8 +334,12 @@ abstract class ReferencePipeline<P_IN, P_OUT>
                     @Override
                     public void accept(P_OUT u) {
                         try (IntStream result = mapper.apply(u)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 
@@ -361,6 +371,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             @Override
             Sink<P_OUT> opWrapSink(int flags, Sink<Double> sink) {
                 class FlatMap implements Sink<P_OUT>, DoublePredicate {
+                    private final boolean shorts = isShortCircuitingPipeline();
                     @Stable boolean cancel;
 
                     @Override public void begin(long size) { sink.begin(-1); }
@@ -369,8 +380,12 @@ abstract class ReferencePipeline<P_IN, P_OUT>
                     @Override
                     public void accept(P_OUT u) {
                         try (DoubleStream result = mapper.apply(u)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 
@@ -403,6 +418,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             @Override
             Sink<P_OUT> opWrapSink(int flags, Sink<Long> sink) {
                 class FlatMap implements Sink<P_OUT>, LongPredicate {
+                    private final boolean shorts = isShortCircuitingPipeline();
                     @Stable boolean cancel;
 
                     @Override public void begin(long size) { sink.begin(-1); }
@@ -411,8 +427,12 @@ abstract class ReferencePipeline<P_IN, P_OUT>
                     @Override
                     public void accept(P_OUT u) {
                         try (LongStream result = mapper.apply(u)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 

@@ -268,6 +268,7 @@ abstract class DoublePipeline<E_IN>
             Sink<Double> opWrapSink(int flags, Sink<Double> sink) {
                 class FlatMap implements Sink.OfDouble, DoublePredicate {
                     @Stable boolean cancel;
+                    private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }
@@ -275,8 +276,12 @@ abstract class DoublePipeline<E_IN>
                     @Override
                     public void accept(double input) {
                         try (DoubleStream result = mapper.apply(input)) {
-                            if (result != null)
-                                result.sequential().allMatch(this);
+                            if (result != null) {
+                                if (shorts)
+                                    result.sequential().allMatch(this);
+                                else
+                                    result.sequential().forEach(sink::accept);
+                            }
                         }
                     }
 

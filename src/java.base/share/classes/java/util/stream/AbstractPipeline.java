@@ -424,7 +424,7 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
      * @return {@code true} if any stage in this segment is stateful,
      *         {@code false} if not.
      */
-    protected final boolean hasAnyStateful() {
+    protected final boolean isStatefulSegment() {
          var result = false;
          for (var u = sourceStage.nextStage;
               u != null && !(result = u.opIsStateful()) && u != this;
@@ -432,6 +432,15 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
          }
          return result;
      }
+
+    protected final boolean isShortCircuitingPipeline() {
+        var result = false;
+        for (var u = sourceStage.nextStage;
+             u != null && !(result = StreamOpFlag.SHORT_CIRCUIT.isKnown(u.combinedFlags));
+             u = u.nextStage) {
+        }
+        return result;
+    }
 
     /**
      * Get the source spliterator for this pipeline stage.  For a sequential or
@@ -456,7 +465,7 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
             throw new IllegalStateException(MSG_CONSUMED);
         }
 
-        if (isParallel() && hasAnyStateful()) {
+        if (isParallel() && isStatefulSegment()) {
             // Adapt the source spliterator, evaluating each stateful op
             // in the pipeline up to and including this pipeline stage.
             // The depth and flags of each pipeline stage are adjusted accordingly.
