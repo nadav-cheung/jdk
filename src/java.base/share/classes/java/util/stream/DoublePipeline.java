@@ -266,12 +266,11 @@ abstract class DoublePipeline<E_IN>
                 StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
             Sink<Double> opWrapSink(int flags, Sink<Double> sink) {
-                class FlatMap extends Sink.ChainedDouble<Double> implements DoublePredicate {
+                class FlatMap implements Sink.OfDouble, DoublePredicate {
                     @Stable boolean cancel;
 
-                    FlatMap() { super(sink); }
-
-                    @Override public void begin(long size) { downstream.begin(-1); }
+                    @Override public void begin(long size) { sink.begin(-1); }
+                    @Override public void end() { sink.end(); }
 
                     @Override
                     public void accept(double input) {
@@ -283,15 +282,17 @@ abstract class DoublePipeline<E_IN>
 
                     @Override
                     public boolean cancellationRequested() {
-                        return cancel || (cancel |= downstream.cancellationRequested());
+                        return cancel || (cancel |= sink.cancellationRequested());
                     }
 
                     @Override
                     public boolean test(double output) {
-                        if (cancel)
+                        if (!cancel) {
+                            sink.accept(output);
+                            return !(cancel |= sink.cancellationRequested());
+                        } else {
                             return false;
-                        downstream.accept(output);
-                        return !cancellationRequested();
+                        }
                     }
                 }
                 return new FlatMap();
