@@ -279,7 +279,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             @Override
             Sink<P_OUT> opWrapSink(int flags, Sink<R> sink) {
                 class FlatMap implements Sink<P_OUT>, Predicate<R> {
-                    @Stable boolean cancel;
+                    boolean cancel;
                     private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
@@ -325,7 +325,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             @Override
             Sink<P_OUT> opWrapSink(int flags, Sink<Integer> sink) {
                 class FlatMap implements Sink<P_OUT>, IntPredicate {
-                    @Stable boolean cancel;
+                    boolean cancel;
                     private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }
@@ -372,7 +372,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             Sink<P_OUT> opWrapSink(int flags, Sink<Double> sink) {
                 class FlatMap implements Sink<P_OUT>, DoublePredicate {
                     private final boolean shorts = isShortCircuitingPipeline();
-                    @Stable boolean cancel;
+                    boolean cancel;
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }
@@ -419,7 +419,7 @@ abstract class ReferencePipeline<P_IN, P_OUT>
             Sink<P_OUT> opWrapSink(int flags, Sink<Long> sink) {
                 class FlatMap implements Sink<P_OUT>, LongPredicate {
                     private final boolean shorts = isShortCircuitingPipeline();
-                    @Stable boolean cancel;
+                    boolean cancel;
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }

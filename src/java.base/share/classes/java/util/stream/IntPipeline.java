@@ -301,7 +301,7 @@ abstract class IntPipeline<E_IN>
             @Override
             Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 class FlatMap implements Sink.OfInt, IntPredicate {
-                    @Stable boolean cancel;
+                    boolean cancel;
                     private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }

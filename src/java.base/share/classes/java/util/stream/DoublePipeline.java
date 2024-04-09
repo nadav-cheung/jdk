@@ -267,7 +267,7 @@ abstract class DoublePipeline<E_IN>
             @Override
             Sink<Double> opWrapSink(int flags, Sink<Double> sink) {
                 class FlatMap implements Sink.OfDouble, DoublePredicate {
-                    @Stable boolean cancel;
+                    boolean cancel;
                     private final boolean shorts = isShortCircuitingPipeline();
 
                     @Override public void begin(long size) { sink.begin(-1); }

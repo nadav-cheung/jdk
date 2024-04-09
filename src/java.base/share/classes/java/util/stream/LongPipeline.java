@@ -284,7 +284,7 @@ abstract class LongPipeline<E_IN>
             Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 final var shorts = isShortCircuitingPipeline();
                 class FlatMap implements Sink.OfLong, LongPredicate {
-                    @Stable boolean cancel;
+                    boolean cancel;
 
                     @Override public void begin(long size) { sink.begin(-1); }
                     @Override public void end() { sink.end(); }

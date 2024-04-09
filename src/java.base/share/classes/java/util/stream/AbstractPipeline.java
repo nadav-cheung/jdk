@@ -424,7 +424,7 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
      * @return {@code true} if any stage in this segment is stateful,
      *         {@code false} if not.
      */
-    protected final boolean isStatefulSegment() {
+    protected final boolean hasAnyStateful() {
          var result = false;
          for (var u = sourceStage.nextStage;
               u != null && !(result = u.opIsStateful()) && u != this;
@@ -465,7 +465,7 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
             throw new IllegalStateException(MSG_CONSUMED);
         }
 
-        if (isParallel() && isStatefulSegment()) {
+        if (isParallel() && hasAnyStateful()) {
             // Adapt the source spliterator, evaluating each stateful op
             // in the pipeline up to and including this pipeline stage.
             // The depth and flags of each pipeline stage are adjusted accordingly.
