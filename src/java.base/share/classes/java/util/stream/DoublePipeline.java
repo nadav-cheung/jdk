@@ -24,8 +24,6 @@
  */
 package java.util.stream;
 
-import jdk.internal.vm.annotation.Stable;
-
 import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -42,7 +40,6 @@ import java.util.function.DoubleToIntFunction;
 import java.util.function.DoubleToLongFunction;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.IntFunction;
-import java.util.function.LongPredicate;
 import java.util.function.ObjDoubleConsumer;
 import java.util.function.Supplier;
 

@@ -24,8 +24,6 @@
  */
 package java.util.stream;
 
-import jdk.internal.vm.annotation.Stable;
-
 import java.util.IntSummaryStatistics;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -43,7 +41,6 @@ import java.util.function.IntToDoubleFunction;
 import java.util.function.IntToLongFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ObjIntConsumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**

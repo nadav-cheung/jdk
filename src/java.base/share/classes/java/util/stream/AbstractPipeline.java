@@ -433,6 +433,12 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
          return result;
      }
 
+    /**
+     * Returns whether any of the stages in the (entire) pipeline is short-circuiting
+     * or not.
+     * @return {@code true} if any stage in this pipeline is stateful,
+     *         {@code false} if not.
+     */
     protected final boolean isShortCircuitingPipeline() {
         var result = false;
         for (var u = sourceStage.nextStage;

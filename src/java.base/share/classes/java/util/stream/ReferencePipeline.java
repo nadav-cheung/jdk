@@ -49,7 +49,6 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import jdk.internal.access.SharedSecrets;
-import jdk.internal.vm.annotation.Stable;
 
 /**
  * Abstract base class for an intermediate pipeline stage or pipeline source

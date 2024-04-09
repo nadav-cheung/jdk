@@ -24,8 +24,6 @@
  */
 package java.util.stream;
 
-import jdk.internal.vm.annotation.Stable;
-
 import java.util.LongSummaryStatistics;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -36,7 +34,6 @@ import java.util.Spliterators;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
-import java.util.function.IntPredicate;
 import java.util.function.LongBinaryOperator;
 import java.util.function.LongConsumer;
 import java.util.function.LongFunction;
